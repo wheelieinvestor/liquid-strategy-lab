@@ -1,0 +1,379 @@
+{
+  "dataset": {
+    "description": "Authored synthetic BTC candles; not historical prices.",
+    "end": "2025-01-03T08:00:00+00:00",
+    "funding": "zero_assumed_not_observed",
+    "kind": "synthetic",
+    "rows": 3360,
+    "sha256": "91c28a484ca346fbe15c17fa1efbc77d429eb25320fd4504aa12f69b0486d467",
+    "start": "2025-01-01T00:00:00+00:00"
+  },
+  "dependencies_sha256": "ff4be542996c11a5c487e63d6b1618dd4411d578b733383704f1b4dadcbcfd0b",
+  "metrics": {
+    "breakeven-1R": {
+      "ambiguities": 0,
+      "average_holding_seconds": 13274.999999,
+      "closed_trades": 8,
+      "confidence_interval": {
+        "reason": "paired comparison and sufficient independent blocks required",
+        "status": "insufficient_data"
+      },
+      "coverage": {
+        "exact_jev_responses": 0,
+        "missing_jev_reviews": 0,
+        "native_book_observations": 0,
+        "native_oracle_observations": 0
+      },
+      "empirical_worst_5pct_trade_mean": "-3.8014496240",
+      "expectancy": "-3.7995207345",
+      "fees": "32.2963436400",
+      "funding": "0",
+      "independent_7day_blocks": 0,
+      "liquidation_execution": {
+        "reason": "native mark/book/account history absent",
+        "status": "unsupported"
+      },
+      "mae_mfe_scope": "observed replay marks only, not reconstructed intrabar tape",
+      "maintenance_breach_observations": 0,
+      "max_drawdown_duration_seconds": 108000.0,
+      "max_marked_drawdown_usd": "74.1790236280",
+      "net_pnl": "-40.5585620400",
+      "no_fill_rate": "0",
+      "open_positions": 1,
+      "open_trade_cohorts": [
+        {
+          "entry": "100411",
+          "entry_us": 1735887660000000,
+          "fees": "1.9001777640",
+          "funding": "0",
+          "mae": "-8.2622184",
+          "mfe": "0",
+          "owner": "btc_momentum",
+          "price_pnl": "0",
+          "quantity": "0.01992",
+          "symbol": "BTC"
+        }
+      ],
+      "payoff_ratio": null,
+      "price_pnl_at_execution_prices": "-8.2622184000",
+      "protection_failure_exits": 0,
+      "rejections": {
+        "jev_candidate_stop_preserved": 109,
+        "momentum_not_aligned": 2,
+        "pending": 8
+      },
+      "slippage_informational_already_in_prices": "3.696000",
+      "trades": [
+        {
+          "entry": "100642",
+          "entry_us": 1735777860000000,
+          "exit_us": 1735792079999999,
+          "fees": "3.8014496240",
+          "funding": "0",
+          "holding_seconds": 14219.999999,
+          "mae": "-0.0003976",
+          "mfe": "35.5211864",
+          "net_pnl": "-3.8014496240",
+          "owner": "btc_momentum",
+          "price_pnl": "0.00000",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100259",
+          "entry_us": 1735793160000000,
+          "exit_us": 1735800899999999,
+          "fees": "3.7984124740",
+          "funding": "0",
+          "holding_seconds": 7739.999999,
+          "mae": "-0.0151544",
+          "mfe": "28.9636476",
+          "net_pnl": "-3.7984124740",
+          "owner": "btc_momentum",
+          "price_pnl": "0.00000",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100414",
+          "entry_us": 1735801260000000,
+          "exit_us": 1735821599999999,
+          "fees": "3.8004690720",
+          "funding": "0",
+          "holding_seconds": 20339.999999,
+          "mae": "-8.2656048",
+          "mfe": "40.1152944",
+          "net_pnl": "-3.8004690720",
+          "owner": "btc_momentum",
+          "price_pnl": "0.00000",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100258",
+          "entry_us": 1735821960000000,
+          "exit_us": 1735829699999999,
+          "fees": "3.7983745880",
+          "funding": "0",
+          "holding_seconds": 7739.999999,
+          "mae": "-0.0165502",
+          "mfe": "28.9620524",
+          "net_pnl": "-3.7983745880",
+          "owner": "btc_momentum",
+          "price_pnl": "0.00000",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100413",
+          "entry_us": 1735830060000000,
+          "exit_us": 1735850399999999,
+          "fees": "3.8004312240",
+          "funding": "0",
+          "holding_seconds": 20339.999999,
+          "mae": "-8.2642104",
+          "mfe": "40.1162904",
+          "net_pnl": "-3.8004312240",
+          "owner": "btc_momentum",
+          "price_pnl": "0.00000",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100257",
+          "entry_us": 1735850760000000,
+          "exit_us": 1735858499999999,
+          "fees": "3.7983367020",
+          "funding": "0",
+          "holding_seconds": 7739.999999,
+          "mae": "-0.0177466",
+          "mfe": "28.9606566",
+          "net_pnl": "-3.7983367020",
+          "owner": "btc_momentum",
+          "price_pnl": "0.00000",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100412",
+          "entry_us": 1735858860000000,
+          "exit_us": 1735879199999999,
+          "fees": "3.8003933760",
+          "funding": "0",
+          "holding_seconds": 20339.999999,
+          "mae": "-8.2632144",
+          "mfe": "40.1168880",
+          "net_pnl": "-3.8003933760",
+          "owner": "btc_momentum",
+          "price_pnl": "0.00000",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100256",
+          "entry_us": 1735879560000000,
+          "exit_us": 1735887299999999,
+          "fees": "3.7982988160",
+          "funding": "0",
+          "holding_seconds": 7739.999999,
+          "mae": "-0.0187436",
+          "mfe": "28.9596596",
+          "net_pnl": "-3.7982988160",
+          "owner": "btc_momentum",
+          "price_pnl": "0.00000",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        }
+      ],
+      "turnover": "33996.15120",
+      "win_rate": "0"
+    },
+    "preserve-stop": {
+      "ambiguities": 0,
+      "average_holding_seconds": 14211.428570428572,
+      "closed_trades": 7,
+      "confidence_interval": {
+        "reason": "paired comparison and sufficient independent blocks required",
+        "status": "insufficient_data"
+      },
+      "coverage": {
+        "exact_jev_responses": 0,
+        "missing_jev_reviews": 119,
+        "native_book_observations": 0,
+        "native_oracle_observations": 0
+      },
+      "empirical_worst_5pct_trade_mean": "-15.1550510410",
+      "expectancy": "-13.8677695600",
+      "fees": "28.4973763280",
+      "funding": "0",
+      "independent_7day_blocks": 0,
+      "liquidation_execution": {
+        "reason": "native mark/book/account history absent",
+        "status": "unsupported"
+      },
+      "mae_mfe_scope": "observed replay marks only, not reconstructed intrabar tape",
+      "maintenance_breach_observations": 0,
+      "max_drawdown_duration_seconds": 108000.0,
+      "max_marked_drawdown_usd": "135.4061361160",
+      "net_pnl": "-93.7937225280",
+      "no_fill_rate": "0",
+      "open_positions": 1,
+      "open_trade_cohorts": [
+        {
+          "entry": "100256",
+          "entry_us": 1735879560000000,
+          "fees": "1.8991494080",
+          "funding": "0",
+          "mae": "-2.8121382",
+          "mfe": "28.9596596",
+          "owner": "btc_momentum",
+          "price_pnl": "0",
+          "quantity": "-0.01994",
+          "symbol": "BTC"
+        }
+      ],
+      "payoff_ratio": null,
+      "price_pnl_at_execution_prices": "-65.2963462000",
+      "protection_failure_exits": 0,
+      "rejections": {
+        "jev_exact_cache_missing_preserve_stop_quantity": 119,
+        "momentum_not_aligned": 1
+      },
+      "slippage_informational_already_in_prices": "3.281490",
+      "trades": [
+        {
+          "entry": "100642",
+          "entry_us": 1735777860000000,
+          "exit_us": 1735792559999999,
+          "fees": "3.7984845220",
+          "funding": "0",
+          "holding_seconds": 14699.999999,
+          "mae": "-2.8090440",
+          "mfe": "35.5211864",
+          "net_pnl": "-6.9196445220",
+          "owner": "btc_momentum",
+          "price_pnl": "-3.12116",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100259",
+          "entry_us": 1735793160000000,
+          "exit_us": 1735807319999999,
+          "fees": "3.8091910410",
+          "funding": "0",
+          "holding_seconds": 14159.999999,
+          "mae": "-11.2329996",
+          "mfe": "28.9636476",
+          "net_pnl": "-15.1550510410",
+          "owner": "btc_momentum",
+          "price_pnl": "-11.34586",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100944",
+          "entry_us": 1735807560000000,
+          "exit_us": 1735821659999999,
+          "fees": "3.7907860830",
+          "funding": "0",
+          "holding_seconds": 14099.999999,
+          "mae": "-10.7957558",
+          "mfe": "29.4093124",
+          "net_pnl": "-14.9098060830",
+          "owner": "btc_momentum",
+          "price_pnl": "-11.11902",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100258",
+          "entry_us": 1735821960000000,
+          "exit_us": 1735836119999999,
+          "fees": "3.8091531550",
+          "funding": "0",
+          "holding_seconds": 14159.999999,
+          "mae": "-11.2343954",
+          "mfe": "28.9620524",
+          "net_pnl": "-15.1550131550",
+          "owner": "btc_momentum",
+          "price_pnl": "-11.34586",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100943",
+          "entry_us": 1735836360000000,
+          "exit_us": 1735850459999999,
+          "fees": "3.7907672540",
+          "funding": "0",
+          "holding_seconds": 14099.999999,
+          "mae": "-10.7945666",
+          "mfe": "29.4103034",
+          "net_pnl": "-14.8899672540",
+          "owner": "btc_momentum",
+          "price_pnl": "-11.09920",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100257",
+          "entry_us": 1735850760000000,
+          "exit_us": 1735864919999999,
+          "fees": "3.8091152690",
+          "funding": "0",
+          "holding_seconds": 14159.999999,
+          "mae": "-11.2353924",
+          "mfe": "28.9606566",
+          "net_pnl": "-15.1549752690",
+          "owner": "btc_momentum",
+          "price_pnl": "-11.34586",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        },
+        {
+          "entry": "100942",
+          "entry_us": 1735865160000000,
+          "exit_us": 1735879259999999,
+          "fees": "3.7907295960",
+          "funding": "0",
+          "holding_seconds": 14099.999999,
+          "mae": "-10.7935756",
+          "mfe": "29.4108980",
+          "net_pnl": "-14.8899295960",
+          "owner": "btc_momentum",
+          "price_pnl": "-11.09920",
+          "quantity": "0.00000",
+          "symbol": "BTC"
+        }
+      ],
+      "turnover": "29997.23824",
+      "win_rate": "0"
+    }
+  },
+  "observed_rss_bytes": 105447424,
+  "run_hashes": {
+    "breakeven-1R": "17bbdf7c45106300ffb04ec26a36d3b5e6dd60f28e2c751758cf0dc0319700ab",
+    "preserve-stop": "8a5881e26801d62a84ccdfa1376760c7e40f9dcf20ff527b7f8bf7f8c2b93ba7"
+  },
+  "schema": "liquid-strategy-lab-comparison-v1",
+  "settings": {
+    "data_description": "Authored synthetic BTC candles; not historical prices.",
+    "data_kind": "synthetic",
+    "dataset": "bundled:btc-demo",
+    "fee_per_side": "0.00095",
+    "initial_cash": "1000",
+    "policies": [
+      "preserve-stop",
+      "breakeven-1R"
+    ],
+    "slippage_bps": "1",
+    "spread_bps": "2",
+    "strategy": "btc_momentum",
+    "title": "BTC: preserve the stop versus move to entry at 1R"
+  },
+  "source_sha256": "26ce4f67996508ba2925c08926d1f68c9bb4b1b800950f3e02f080df5a706eeb",
+  "strategy_improvement": "not_established",
+  "version": "0.1.0",
+  "wall_seconds": 0.499
+}

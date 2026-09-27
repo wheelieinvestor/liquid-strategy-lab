@@ -1,0 +1,6 @@
+{
+  "title": "Four Liquid strategies, one simulated account",
+  "initial_cash": "1000",
+  "policy": "current-v5-exact",
+  "enabled": ["btc_momentum", "flow_show_mirror", "xyz100_gex", "inverse_cramer"]
+}

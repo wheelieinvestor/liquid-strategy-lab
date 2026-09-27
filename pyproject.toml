@@ -1,0 +1,40 @@
+[project]
+name = "liquid-strategy-lab"
+version = "0.1.0"
+description = "Local Liquid-focused strategy simulation, comparisons, and stress testing."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+authors = [{name = "wheelieinvestor"}]
+dependencies = [
+  "pydantic>=2.10,<3",
+  "exchange-calendars>=4.13.2,<5",
+  "typesafe-sdk==0.7.1",
+  "psutil>=7,<8",
+  "websockets==15.0.1",
+  "tzdata>=2025.2",
+]
+[project.urls]
+Repository = "https://github.com/wheelieinvestor/liquid-strategy-lab"
+Issues = "https://github.com/wheelieinvestor/liquid-strategy-lab/issues"
+[project.scripts]
+liquid-lab = "liquid_strategy_lab.cli:main"
+liquid-research = "liquid_autonomous_trader.backtesting.__main__:main"
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.8,<1"]
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+packages = ["src/liquid_strategy_lab", "src/liquid_autonomous_trader"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+[tool.ruff.lint.per-file-ignores]
+"src/liquid_autonomous_trader/frozen/**" = ["E501"]
+# Self-contained HTML templates contain intentionally long markup literals.
+"src/liquid_strategy_lab/report.py" = ["E501"]

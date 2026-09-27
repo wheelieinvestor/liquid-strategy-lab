@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+dist/
+outputs/
+.env
+.env.*
+*.sqlite
+*.sqlite-*
+*.db
+.DS_Store
+.gstack/

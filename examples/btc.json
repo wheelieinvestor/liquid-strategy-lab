@@ -1,0 +1,12 @@
+{
+  "title": "BTC: preserve the stop versus move to entry at 1R",
+  "strategy": "btc_momentum",
+  "dataset": "bundled:btc-demo",
+  "data_kind": "synthetic",
+  "data_description": "Authored synthetic BTC candles; not historical prices.",
+  "initial_cash": "1000",
+  "fee_per_side": "0.00095",
+  "spread_bps": "2",
+  "slippage_bps": "1",
+  "policies": ["preserve-stop", "breakeven-1R"]
+}
