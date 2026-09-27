@@ -351,7 +351,7 @@
       "win_rate": "0"
     }
   },
-  "observed_rss_bytes": 105447424,
+  "observed_rss_bytes": 105414656,
   "run_hashes": {
     "breakeven-1R": "17bbdf7c45106300ffb04ec26a36d3b5e6dd60f28e2c751758cf0dc0319700ab",
     "preserve-stop": "8a5881e26801d62a84ccdfa1376760c7e40f9dcf20ff527b7f8bf7f8c2b93ba7"
@@ -372,8 +372,8 @@
     "strategy": "btc_momentum",
     "title": "BTC: preserve the stop versus move to entry at 1R"
   },
-  "source_sha256": "26ce4f67996508ba2925c08926d1f68c9bb4b1b800950f3e02f080df5a706eeb",
+  "source_sha256": "286ea57d6b5f4583e06124fb16adec3afe4826e1b91cf0e5623d2b67ee5b94ea",
   "strategy_improvement": "not_established",
   "version": "0.1.0",
-  "wall_seconds": 0.499
+  "wall_seconds": 0.699
 }

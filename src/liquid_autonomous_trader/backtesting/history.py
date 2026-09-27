@@ -34,7 +34,7 @@ def sha256(path: Path) -> str:
 
 
 def verified_archives(root: Path):
-    manifest = json.loads((root / "manifest.json").read_text())
+    manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
     for source in manifest["sources"]:
         if not source["url"].startswith(BASE):
             # Native funding may appear in other manifest schemas, never assume an archive.
@@ -43,7 +43,9 @@ def verified_archives(root: Path):
         path = (root / "archives" / relative).resolve()
         if not path.is_relative_to((root / "archives").resolve()):
             raise ValueError("archive_path_escape")
-        checksum = path.with_suffix(path.suffix + ".CHECKSUM").read_text().split()[0]
+        checksum = (
+            path.with_suffix(path.suffix + ".CHECKSUM").read_text(encoding="utf-8").split()[0]
+        )
         actual = sha256(path)
         if actual != checksum or actual != source["sha256"]:
             raise ValueError("archive_checksum_mismatch")
@@ -148,7 +150,7 @@ def funding_rates(root: Path) -> dict[int, D]:
     This avoids loading a million candle dictionaries merely to read funding. The
     cached rates have rounded float provenance; the report retains that limitation.
     """
-    manifest = json.loads((root / "manifest.json").read_text())
+    manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
     path = root / "dataset.json"
     with path.open("rb") as stream:
         with mmap.mmap(stream.fileno(), 0, access=mmap.ACCESS_READ) as data:

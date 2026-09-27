@@ -16,7 +16,7 @@ def call(*args, cwd):
 
 
 def verify(folder):
-    value = json.loads((folder / "comparison.json").read_text())
+    value = json.loads((folder / "comparison.json").read_text(encoding="utf-8"))
     assert value["dataset"]["kind"] == "synthetic"
     assert all(v["closed_trades"] > 0 for v in value["metrics"].values())
     assert (folder / "report.html").stat().st_size > 1000
@@ -126,12 +126,14 @@ def main():
             "PASS: fresh ZIP install, all community commands, installed wheel, "
             "identical demo economics"
         )
+        print("Demo run hashes: " + json.dumps(first, sort_keys=True))
         receipt = args.work_dir / ("install-" + sys.platform + ".json")
         receipt.write_text(
             json.dumps(
                 {"status": "passed", "platform": sys.platform, "run_hashes": first}, indent=2
             )
-            + "\n"
+            + "\n",
+            encoding="utf-8",
         )
 
 

@@ -205,7 +205,8 @@ def render(result: dict, path: Path) -> dict:
             "th,td{text-align:left;padding:10px;vertical-align:top}</style>"
             "<h1>Public offline contract</h1><p><strong>UNSUPPORTED for strategy "
             "performance.</strong> This fixture checks evidence requirements; "
-            "no option trade or P&amp;L is inferred.</p><table>" + rows + "</table></html>"
+            "no option trade or P&amp;L is inferred.</p><table>" + rows + "</table></html>",
+            encoding="utf-8",
         )
         return {"net_pnl": None, "closed_trades": 0, "verdict": "unsupported"}
     result = reportable(result)
@@ -268,5 +269,5 @@ Confidence interval requires a valid paired comparison with enough independent b
 <h2>All retained rejection reasons</h2><table>{rejects}</table>
 <p>No candidate recommendation or live configuration change follows from this report.</p>
 </html>"""
-    path.write_text(document)
+    path.write_text(document, encoding="utf-8")
     return values

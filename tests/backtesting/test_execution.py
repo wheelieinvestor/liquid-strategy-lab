@@ -240,7 +240,7 @@ def test_restart_after_partial_fill_is_idempotent_and_matches_uninterrupted(tmp_
     assert sim.state() == before
     checkpoint = tmp_path / "checkpoint.json"
     sim.save(checkpoint)
-    restored = SimulatedExecution.restore(json.loads(checkpoint.read_text()))
+    restored = SimulatedExecution.restore(json.loads(checkpoint.read_text(encoding="utf-8")))
     quote(restored, 2, depth=".5")
     assert restored.state() == before
     quote(sim, 3, depth="1.5")

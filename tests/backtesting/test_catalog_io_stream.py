@@ -55,7 +55,7 @@ def test_export_is_verified_and_never_overwritten(tmp_path):
     manifest = export_catalog(store, path)
     assert verify_export(path) == manifest
     restored = Catalog(tmp_path / "restored.sqlite")
-    for line in path.read_text().splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         value = json.loads(line)
         value["lineage"] = tuple(value["lineage"])
         restored.append([Event(**value)])

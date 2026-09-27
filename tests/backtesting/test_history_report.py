@@ -22,7 +22,7 @@ def test_archive_checksums_and_contiguous_decimal_rows(tmp_path):
     with zipfile.ZipFile(archive, "w") as z:
         z.writestr("fixture.csv", rows)
     checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
-    archive.with_suffix(".zip.CHECKSUM").write_text(checksum + " fixture.zip")
+    archive.with_suffix(".zip.CHECKSUM").write_text(checksum + " fixture.zip", encoding="utf-8")
     (tmp_path / "manifest.json").write_text(
         json.dumps(
             {
@@ -34,7 +34,8 @@ def test_archive_checksums_and_contiguous_decimal_rows(tmp_path):
                     }
                 ]
             }
-        )
+        ),
+        encoding="utf-8",
     )
     verified = list(verified_archives(tmp_path))
     values = list(archive_minutes(verified[0][0], checksum))
@@ -48,7 +49,7 @@ def test_funding_preserves_actual_native_timestamp_and_rejects_corruption(tmp_pa
     dataset = b'{"bars":[],"funding":[{"rate":0.0001,"t":3600035}],"marks":[]}'
     (tmp_path / "dataset.json").write_bytes(dataset + b"\n")
     (tmp_path / "manifest.json").write_text(
-        json.dumps({"dataset_sha256": hashlib.sha256(dataset).hexdigest()})
+        json.dumps({"dataset_sha256": hashlib.sha256(dataset).hexdigest()}), encoding="utf-8"
     )
     assert funding_rates(tmp_path) == {3_600_035_000: D(".0001")}
     (tmp_path / "dataset.json").write_bytes(dataset.replace(b"0.0001", b"0.0002"))
@@ -122,8 +123,8 @@ def test_zero_trade_report_and_html_escaping(tmp_path):
     assert values["confidence_interval"]["status"] == "insufficient_data"
     path = tmp_path / "report.html"
     render(result, path)
-    assert "<script>" not in path.read_text()
-    assert "&lt;script&gt;" in path.read_text()
+    assert "<script>" not in path.read_text(encoding="utf-8")
+    assert "&lt;script&gt;" in path.read_text(encoding="utf-8")
     result["ledger"]["fees"] = "1"
     with pytest.raises(ValueError, match="reconciliation"):
         metrics(result)

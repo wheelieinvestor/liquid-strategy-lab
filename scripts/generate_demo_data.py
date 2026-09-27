@@ -1,4 +1,4 @@
-"""Rebuild our authored, CC0 synthetic teaching dataset with Decimal arithmetic."""
+"""Rebuild our authored, MIT-licensed synthetic teaching dataset with Decimal arithmetic."""
 
 import csv
 from datetime import UTC, datetime, timedelta
