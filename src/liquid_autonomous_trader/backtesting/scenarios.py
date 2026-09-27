@@ -203,8 +203,8 @@ def declaration():
 def freeze(path: Path):
     encoded = canonical(declaration()) + "\n"
     if path.exists():
-        if path.read_text() != encoded:
+        if path.read_text(encoding="utf-8") != encoded:
             raise ValueError("frozen_scenario_declaration_changed")
         return False
-    path.write_text(encoded)
+    path.write_text(encoded, encoding="utf-8")
     return True

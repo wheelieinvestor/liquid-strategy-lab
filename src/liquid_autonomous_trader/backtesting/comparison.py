@@ -168,10 +168,10 @@ def run(directory, cache, *, limit=None, retry_failed=False):
     directory.mkdir(parents=True, exist_ok=True)
     plan = declaration()
     plan_path = directory / "plan.json"
-    if plan_path.exists() and json.loads(plan_path.read_text()) != plan:
+    if plan_path.exists() and json.loads(plan_path.read_text(encoding="utf-8")) != plan:
         raise ValueError("frozen_study_plan_mismatch")
     if not plan_path.exists():
-        plan_path.write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n")
+        plan_path.write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     binding = {
         "package_sha256": package_hash(),
         "all_production_source_sha256": source_binding(),
@@ -312,7 +312,7 @@ def run(directory, cache, *, limit=None, retry_failed=False):
                     spec, lambda s=settings: run_btc(cache, first, last, s, resource_guard=guard)
                 )
                 if cost["id"] == "base" and policy == POLICIES[0] and row["status"] == "passed":
-                    baseline = json.loads((directory / row["artifact"]).read_text())
+                    baseline = json.loads((directory / row["artifact"]).read_text(encoding="utf-8"))
         if baseline is not None:
             cohorts, exclusions = matched_cohorts(baseline)
             frozen_cohorts = {
@@ -322,7 +322,7 @@ def run(directory, cache, *, limit=None, retry_failed=False):
             }
             cohort_path = directory / ("cohorts-" + digest(frozen_cohorts)[:20] + ".json")
             if not cohort_path.exists():
-                cohort_path.write_text(canonical(frozen_cohorts) + "\n")
+                cohort_path.write_text(canonical(frozen_cohorts) + "\n", encoding="utf-8")
             for i, cohort in enumerate(cohorts):
                 start = cohort["fill"]["at_us"] // (15 * MINUTE_US) * 15 * MINUTE_US
                 for policy in POLICIES:
@@ -402,7 +402,9 @@ def run(directory, cache, *, limit=None, retry_failed=False):
             "output_bytes": sum(p.stat().st_size for p in directory.rglob("*") if p.is_file()),
         },
     }
-    (directory / "comparison.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
+    (directory / "comparison.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     render_comparison(summary, directory / "comparison.html")
     return summary
 
@@ -424,8 +426,8 @@ def summarize(rows, directory, plan):
                     failed.append(fold["id"])
                     continue
                 left, right = by_policy[POLICIES[0]], by_policy[policy]
-                a = json.loads((directory / left["artifact"]).read_text())
-                b = json.loads((directory / right["artifact"]).read_text())
+                a = json.loads((directory / left["artifact"]).read_text(encoding="utf-8"))
+                b = json.loads((directory / right["artifact"]).read_text(encoding="utf-8"))
                 paired = weekly_pairs(a, b)
                 if paired["status"] != "paired":
                     failed.append(fold["id"])
@@ -570,5 +572,6 @@ def render_comparison(result, path):
         + "".join(tables)
         + "<p>Core SHA256: <code>"
         + esc(result["core_hash"])
-        + "</code></p></html>"
+        + "</code></p></html>",
+        encoding="utf-8",
     )

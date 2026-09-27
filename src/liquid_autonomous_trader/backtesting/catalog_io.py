@@ -112,7 +112,9 @@ def export_catalog(store: Catalog, path: Path):
 
 
 def verify_export(path: Path):
-    manifest = json.loads(path.with_suffix(path.suffix + ".manifest.json").read_text())
+    manifest = json.loads(
+        path.with_suffix(path.suffix + ".manifest.json").read_text(encoding="utf-8")
+    )
     if manifest["schema"] != "liquid-event-export-v1" or path.stat().st_size != manifest["bytes"]:
         raise ValueError("export_manifest_shape_or_size")
     hasher = hashlib.sha256()

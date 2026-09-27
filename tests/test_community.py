@@ -40,7 +40,9 @@ def test_demo_offline_accounting_reproducibility_and_report(tmp_path, offline):
     a, b = tmp_path / "first", tmp_path / "second"
     assert main(["demo", "--output", str(a)]) == 0
     assert main(["demo", "--output", str(b)]) == 0
-    first, second = [json.loads((p / "comparison.json").read_text()) for p in (a, b)]
+    first, second = [
+        json.loads((p / "comparison.json").read_text(encoding="utf-8")) for p in (a, b)
+    ]
     assert first["run_hashes"] == second["run_hashes"]
     assert first["dataset"]["kind"] == "synthetic"
     assert first["dataset"]["funding"] == "zero_assumed_not_observed"
@@ -53,10 +55,10 @@ def test_demo_offline_accounting_reproducibility_and_report(tmp_path, offline):
             - Decimal(metric["fees"])
             + Decimal(metric["funding"])
         )
-        result = json.loads((a / (name + ".json")).read_text())
+        result = json.loads((a / (name + ".json")).read_text(encoding="utf-8"))
         assert result["mode"] == "synthetic_stress"
     assert first["run_hashes"]["preserve-stop"] != first["run_hashes"]["breakeven-1R"]
-    report = (a / "report.html").read_text()
+    report = (a / "report.html").read_text(encoding="utf-8")
     assert "SYNTHETIC DATA" in report
     assert "Largest account decline" in report
     assert "https://" not in report and "<script" not in report
@@ -64,22 +66,27 @@ def test_demo_offline_accounting_reproducibility_and_report(tmp_path, offline):
     with pytest.raises(SystemExit) as exc:
         main(["demo", "--output", str(a)])
     assert exc.value.code == 2
-    assert json.loads((a / "comparison.json").read_text())["run_hashes"] == first["run_hashes"]
+    assert (
+        json.loads((a / "comparison.json").read_text(encoding="utf-8"))["run_hashes"]
+        == first["run_hashes"]
+    )
 
 
 def test_one_setting_change_and_escaped_title(tmp_path, offline):
-    settings = BtcSettings(title='<script>alert("x")</script>', policies=["breakeven-1.5R"])
+    settings = BtcSettings(
+        title='<script>alert("x")</script> Café 東京', policies=["breakeven-1.5R"]
+    )
     run_settings(settings, tmp_path, tmp_path / "changed")
-    report = (tmp_path / "changed/report.html").read_text()
+    report = (tmp_path / "changed/report.html").read_text(encoding="utf-8")
     assert "<script>alert" not in report
     assert "&lt;script&gt;" in report
-    result = json.loads((tmp_path / "changed/comparison.json").read_text())
+    result = json.loads((tmp_path / "changed/comparison.json").read_text(encoding="utf-8"))
     assert list(result["metrics"]) == ["breakeven-1.5R"]
 
 
 def test_portfolio_uses_all_four_real_strategy_adapters(tmp_path, offline):
     assert main(["portfolio", "--output", str(tmp_path / "portfolio")]) == 0
-    result = json.loads((tmp_path / "portfolio/portfolio.json").read_text())
+    result = json.loads((tmp_path / "portfolio/portfolio.json").read_text(encoding="utf-8"))
     positions = result["simulation"]["ledger"]["positions"]
     assert {p["owner"] for p in positions.values()} == {
         "btc_momentum",
@@ -87,7 +94,7 @@ def test_portfolio_uses_all_four_real_strategy_adapters(tmp_path, offline):
         "xyz100_gex",
         "inverse_cramer",
     }
-    assert "SYNTHETIC DATA" in (tmp_path / "portfolio/report.html").read_text()
+    assert "SYNTHETIC DATA" in (tmp_path / "portfolio/report.html").read_text(encoding="utf-8")
 
 
 @pytest.mark.parametrize(
@@ -147,7 +154,7 @@ def test_bundled_data_cannot_be_mislabeled_or_overwritten(tmp_path):
     ],
 )
 def test_corrupt_candles_fail_before_simulation(tmp_path, mutation, expected):
-    lines = bundled("btc-demo.csv").read_text().splitlines()
+    lines = bundled("btc-demo.csv").read_text(encoding="utf-8").splitlines()
     if mutation == "gap":
         lines.pop(20)
     elif mutation == "timezone":
@@ -161,7 +168,7 @@ def test_corrupt_candles_fail_before_simulation(tmp_path, mutation, expected):
         fields[1] = "NaN"
         lines[1] = ",".join(fields)
     p = tmp_path / "bad.csv"
-    p.write_text("\n".join(lines) + "\n")
+    p.write_text("\n".join(lines) + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match=expected):
         load_csv(p, kind="proxy", description="Invalid test data")
 

@@ -34,7 +34,7 @@ def timestamp(value):
 
 
 def write(path, value):
-    path.write_text(json.dumps(value, sort_keys=True, indent=2) + "\n")
+    path.write_text(json.dumps(value, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
 def parser():
@@ -142,7 +142,9 @@ def main():
             raise ValueError("model_export_size_budget")
         cache = ModelCache(output_path(args.cache))
         try:
-            result = import_recorded_models(json.loads(args.evidence.read_text()), cache)
+            result = import_recorded_models(
+                json.loads(args.evidence.read_text(encoding="utf-8")), cache
+            )
             write(output_path(args.output), result)
             print(
                 json.dumps(
@@ -161,7 +163,8 @@ def main():
         if max(args.records.stat().st_size, args.archives.stat().st_size) > 32 * 1024 * 1024:
             raise ValueError("source_export_size_budget")
         events, receipt = normalize_sources(
-            json.loads(args.records.read_text()), json.loads(args.archives.read_text())
+            json.loads(args.records.read_text(encoding="utf-8")),
+            json.loads(args.archives.read_text(encoding="utf-8")),
         )
         path = output_path(args.output)
         with path.open("x") as stream:
@@ -175,7 +178,8 @@ def main():
         if args.evidence.stat().st_size > 32 * 1024 * 1024:
             raise ValueError("evidence_size_budget")
         result = calibrate(
-            json.loads(args.evidence.read_text()), split_ms=timestamp(args.split) // 1000
+            json.loads(args.evidence.read_text(encoding="utf-8")),
+            split_ms=timestamp(args.split) // 1000,
         )
         path = output_path(args.output)
         write(path, result)
@@ -221,12 +225,12 @@ def main():
         )
         from liquid_autonomous_trader.backtesting.portfolio import PortfolioEngine
 
-        manifest = json.loads(args.manifest.read_text())
+        manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
         output = output_path(args.output)
         until = timestamp(args.until) if args.until else 2**62
         begin, cpu = time.monotonic(), time.process_time()
         if args.resume:
-            saved = json.loads(args.resume.read_text())
+            saved = json.loads(args.resume.read_text(encoding="utf-8"))
             if saved["manifest_sha256"] != digest(manifest):
                 raise ValueError("resume_manifest_mismatch")
             engine = PortfolioEngine.restore(saved["checkpoint"])
@@ -297,7 +301,7 @@ def main():
     elif args.command == "historical":
         path = output_path(args.output)
         settings = (
-            HistoryAssumptions(**json.loads(args.assumptions.read_text()))
+            HistoryAssumptions(**json.loads(args.assumptions.read_text(encoding="utf-8")))
             if args.assumptions
             else HistoryAssumptions()
         )
@@ -344,7 +348,7 @@ def main():
             )
         )
     elif args.command == "report":
-        result = json.loads(args.run.read_text())
+        result = json.loads(args.run.read_text(encoding="utf-8"))
         summary = render(result, output_path(args.output))
         print(
             json.dumps({"net_pnl": summary["net_pnl"], "closed_trades": summary["closed_trades"]})
@@ -400,7 +404,7 @@ def main():
         catalog = Catalog(output_path(args.catalog))
         inserted = 0
         try:
-            with args.events.open() as stream:
+            with args.events.open(encoding="utf-8") as stream:
                 while line := stream.readline(4 * 1024 * 1024 + 1):
                     if len(line) > 4 * 1024 * 1024:
                         raise ValueError("import_event_size_budget")

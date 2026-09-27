@@ -228,7 +228,7 @@ def run(
         }
         name = family or "all"
         (directory / (name + "-summary.json")).write_text(
-            json.dumps(result, sort_keys=True, indent=2) + "\n"
+            json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8"
         )
         render(result, directory / (name + "-summary.html"))
         return result
@@ -254,5 +254,6 @@ def render(result, path):
         "</style><h1>Liquid scenario acceptance</h1><p>Conditional behavior tests. "
         "No profitability or live promotion claim. All attempts remain in the local journal.</p>"
         "<p>" + html.escape(str(result["counts"])) + "</p><table><tr><th>Case</th><th>Status</th>"
-        "<th>Attempt</th><th>Core hash</th></tr>" + rows + "</table></html>"
+        "<th>Attempt</th><th>Core hash</th></tr>" + rows + "</table></html>",
+        encoding="utf-8",
     )

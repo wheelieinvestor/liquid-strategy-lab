@@ -9,8 +9,8 @@ from liquid_autonomous_trader.backtesting.history import Minute
 def test_study_resume_binds_economics_and_rejects_modified_artifact(monkeypatch, tmp_path):
     cache = tmp_path / "cache"
     cache.mkdir()
-    (cache / "manifest.json").write_text("{}")
-    (cache / "dataset.json").write_text("{}")
+    (cache / "manifest.json").write_text("{}", encoding="utf-8")
+    (cache / "dataset.json").write_text("{}", encoding="utf-8")
     first = comparison.stamp(2025, 7, 2)
     last = first + 30 * comparison.MINUTE_US
     plan = comparison.declaration()
@@ -34,7 +34,7 @@ def test_study_resume_binds_economics_and_rejects_modified_artifact(monkeypatch,
     assert resumed["invocation"]["executed"] == 1
     assert resumed["runs"][0] == first_run["runs"][0]
     artifact = directory / first_run["runs"][0]["artifact"]
-    artifact.write_text("{}")
+    artifact.write_text("{}", encoding="utf-8")
     damaged = comparison.run(directory, cache, limit=1)
     assert damaged["stopped"] == "resumed_study_artifact_corrupted"
     assert damaged["counts"]["passed"] == 0

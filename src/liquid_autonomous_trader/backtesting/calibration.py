@@ -192,4 +192,4 @@ def render_calibration(result, path: Path):
     )
     text += "".join(sections) + "<h2>Coverage limits</h2><ul>"
     text += "".join(f"<li>{html.escape(x)}</li>" for x in result["limitations"])
-    path.write_text(text + "</ul></html>")
+    path.write_text(text + "</ul></html>", encoding="utf-8")
