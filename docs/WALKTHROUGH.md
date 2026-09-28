@@ -1,60 +1,14 @@
-# A community walkthrough for Liquid Strategy Lab v0.1.1
+# A simple community walkthrough
 
-Audience: Liquid users and ATG Discord members. Suggested length: 15–20 minutes. This is the host's script; it does not send invitations or community messages.
+Give members the [starter ZIP](https://github.com/wheelieinvestor/liquid-strategy-lab/releases/latest/download/liquid-strategy-lab-ai-starter.zip) and the prompt in [START_HERE.md](../START_HERE.md).
 
-## Before the session
+1. **Describe a rule.** Start with the included 20/50 moving-average trend example, or give the AI explicit entry/exit rules. The AI checks what will run.
+2. **Run five markets.** The engine generates rising, falling, sideways, choppy and sudden-drop prices. Each has a fresh $1,000 simulated account and $200 target exposure by default.
+3. **Read the result.** The AI explains gain/loss before costs, biggest account decline, trades and open positions. The optional HTML report shows the same evidence.
+4. **Inspect a trade.** Point out that a completed candle produces a decision and the next candle's open supplies the fill. The final decision has no future candle to trade on.
+5. **Check the arithmetic.** Have the AI run `scripts/verify_calculations.py`; it independently reconstructs the recorded economics.
+6. **Change one rule.** Keep the scenarios, seed and sizing fixed. Compare each market with its earlier result. Then try other seeds without hiding poor outcomes.
 
-Share the v0.1.1 release link and README. Ask participants to install uv and download/extract the release before the call. Keep an unmodified copy of `examples/btc.json` and the included `examples/report.html` available. A participant without a working installation can still follow the included report. The [hands-on testing guide](TEST_IT.md) adds independent arithmetic checks and higher-cost comparisons.
+Say explicitly: “This tests how your rules behave under fictional conditions. All trading costs are excluded. It does not tell us what you would have made on Liquid.”
 
-## 1. Explain the purpose
-
-“This is a simulator. We can change a strategy rule and see what happens under the same conditions. These example prices are made up for teaching. The results are not live trades or a prediction.”
-
-Explain that the strategy cannot see future bars. Costs, stops, order timing, and shared account limits affect the outcome.
-
-## 2. Run the example together
-
-From the downloaded folder:
-
-```sh
-uv sync --frozen
-uv run --frozen liquid-lab demo --output outputs/workshop-original --open
-```
-
-Point out the synthetic-data label first. Then read the net result, largest decline, fees, and remaining open positions. Show both account-value curves and the trade rows. A smaller loss is still a loss.
-
-“Preserve the original stop” is the missing-model fallback, not an exact replay of historical Jev decisions. “Move stop to entry at 1R” is a deterministic research variation. 1R is the original entry-to-stop distance; fees can make an entry-price stop lose money.
-
-## 3. Make one change
-
-Open `examples/btc.json`. Change `breakeven-1R` to `breakeven-1.5R`; leave every other setting unchanged. Save it, then run:
-
-```sh
-uv run --frozen liquid-lab run --config examples/btc.json --output outputs/workshop-variation --open
-```
-
-Compare the reports side by side. Ask: did net result, largest decline, trade count, and fees all move in the same direction? Explain that changing an exit also changes when capital is available for later entries. This is a whole-strategy comparison, not necessarily identical entry cohorts.
-
-Do not repeatedly tune this small teaching dataset and call the best setting validated. A result needs sufficient unseen data and realistic execution evidence before it supports a performance claim.
-
-## 4. Show the shared account
-
-```sh
-uv run --frozen liquid-lab portfolio --output outputs/workshop-portfolio --open
-```
-
-Show the BTC, Flow, XYZ100, and Cramer agents. Explain that this short synthetic event sequence proves how the machinery behaves together; it is not four strategies' historical returns. The linked run JSON retains accepted and rejected decisions.
-
-## 5. Show an execution failure test
-
-```sh
-uv run --frozen liquid-lab stress --family execution --output outputs/workshop-stress
-```
-
-Open `outputs/workshop-stress/execution-summary.html`. These checks exercise order failures, delayed/partial fills, and accounting protections. A passing check is not a profitable trade.
-
-## 6. Give members a small follow-up exercise
-
-Choose one setting, write down the question it tests, and preserve both results. When sharing, include the release version, data type, settings, and limitations. Never share account credentials or private input files. Collect installation problems, confusing report labels, and useful research questions.
-
-For the next session, restore the original settings from the downloaded release and choose new output names. The exact commands above are the same on Windows PowerShell, macOS Terminal, and Linux shells after uv is installed.
+Members receive a folder they can reuse with their AI, not an account login or a hosted website. Their AI must be able to read files and execute Python. The HTML report can also be opened without a server.

@@ -1,38 +1,32 @@
 # Give this folder to your AI
 
-1. Download and extract the AI starter ZIP.
-2. Open the extracted folder in an AI coding tool that can read files and run Python, such as Codex or Claude Code.
-3. Paste this prompt and describe your strategy:
+Download and extract the starter ZIP, open the folder in an AI coding tool, and paste:
 
-> Read START_HERE.md and use this Liquid Strategy Lab project to test my strategy with simulated money. Handle setup and run the tests for me. Ask about important missing rules, explain the data and cost assumptions, and give me the results here in the conversation. Here is my strategy: [describe your idea].
+> Read START_HERE.md. Use this project to test my strategy on synthetic data, with all trading costs excluded. Handle setup and execution, check that the rules match my idea, and explain the results here. My strategy is: [your rules].
 
-You do not need to type terminal commands or open the HTML report yourself. Your AI handles the commands and explains the saved results. The HTML and trade files remain available if you want to inspect them.
-
-The AI needs file access and a Python execution environment with the required dependencies. A chat that can only read an uploaded file cannot execute the backtester. Check your chosen tool's capabilities before assuming an upload will run.
+Your tool needs file access and Python execution. Uploading files to a chat that cannot run code will not run the engine. You do not need a wallet, Liquid login, hosted connector or localhost website. Your AI explains the results in the conversation; saved reports are optional to open.
 
 ## Instructions for the AI
 
-1. Read AGENTS.md, docs/SETTINGS.md and docs/RESULTS.md. Locate this folder; quote paths containing spaces. Explain the plan in a few sentences and ask only for material missing choices.
-2. Check whether execution tools and Python 3.12 are available. If uv is available, run `uv sync --frozen` from this folder. Follow its official installation instructions if needed and permitted. If execution or setup is unavailable, explain the specific missing capability; do not invent a result.
-3. Run the included demo once into a new folder, without `--open`. This is a setup check using authored synthetic data, not a test of the user's strategy. Read the resulting JSON and run the independent arithmetic checker.
-4. Translate the user's idea into explicit market, timeframe, entry, exit, sizing, leverage and data requirements. Check that the executable rules match the request. Do not silently substitute a built-in strategy for a different idea.
-5. For a supported template, create a settings file and run it. For a new strategy, implement and test an isolated research adapter when your coding tools permit it, reusing the engine's ledger/execution model and following CONTRIBUTING.md. Preserve accounting and existing templates. If a rule or required input cannot be implemented or verified, report it as unsupported.
-6. Use available, permitted data and identify its provenance. The bundled candles are synthetic; the simple CSV path assumes zero funding. Exact news, Flow, GEX and historical AI strategies require their timestamped inputs. State all missing data and assumptions. Do not fabricate a historical series or call synthetic gains evidence of profitability.
-7. Keep results in a new project-local `outputs/` folder for each run. Compare a baseline with the proposed change and higher costs where applicable. Use the independent checker for its supported BTC/portfolio result formats; add appropriate reconciliation checks for any new adapter. A passing demo does not verify a new strategy implementation.
-8. Explain the outcome in the conversation: what rules ran, data coverage, net result after costs, fees/funding/execution assumptions, largest decline, completed trades, open positions and important limitations. Link the saved evidence. Clearly separate software working from a strategy showing evidence of an edge.
+1. Read AGENTS.md, docs/SYNTHETIC.md and docs/RESULTS.md. Use the synthetic sandbox by default. Locate the folder and quote paths containing spaces.
+2. Use Python 3.12 and `uv sync --frozen` for setup. If execution or dependency installation is unavailable, state that specific limitation. Do not invent a result.
+3. Translate the idea into explicit entry, exit, direction and position-size rules. Ask only about material missing rules. The default is a 20/50 moving-average trend strategy; it is not a substitute for an unrelated user strategy.
+4. Use `examples/strategy.json` for the built-in rule. For other price-based rules, create a local Python file with `decide(bars, position)` and a custom settings file, following docs/SYNTHETIC.md. Verify entry/exit examples and timing with focused tests. Preserve the shared ledger. Do not silently approximate unsupported rules such as intrabar stops, limit fills or external news inputs.
+5. Run all five scenarios with the same rules, seed and sizing. The starter excludes all fees, spread, slippage and funding. Use a new output directory for every run. Custom Python is trusted local code: inspect it for future-data access, external inputs and side effects. The engine's past-only callback is not a security boundary.
+6. Read the saved JSON and run the independent arithmetic checker. Explain gains/losses before costs, largest decline, completed trades, open endpoint positions, rules and assumptions. A result includes unrealized profit/loss on positions still open.
+7. For a rule change, compare against the original on identical scenarios and seeds. Try additional seeds without selecting only good results. Synthetic paths are deliberately designed exercises, not calibrated Liquid history, and do not establish profitability or eliminate overfitting.
+8. Answer in plain language in the conversation and link the saved evidence. Keep all work scoped to research. Use the advanced cost-aware tools only when the user wants their additional assumptions.
 
-Useful setup commands, for the AI to run from the extracted folder:
+Commands for the AI to run from this folder:
 
 ```sh
 uv sync --frozen
-uv run --frozen liquid-lab demo --output outputs/setup-check
-uv run --frozen python scripts/verify_calculations.py outputs/setup-check --output outputs/setup-arithmetic
+uv run --frozen liquid-lab sandbox --config examples/strategy.json --output outputs/my-strategy
+uv run --frozen python scripts/verify_calculations.py outputs/my-strategy --output outputs/my-strategy-arithmetic
 ```
 
-Choose unused output folders on later runs. For a built-in BTC test, use `liquid-lab run --config <settings.json> --output <new-folder>`; the settings guide documents its actual controls. The supplied BTC template has fixed sizing, so changing initial cash alone does not implement a requested risk-per-trade rule.
+For a custom rule, replace the config with your custom settings file; `examples/custom-strategy.json` is a working example. Choose unused output folders on repeat runs.
 
-## What this download includes
+## What people receive
 
-The audited v0.1.1 simulation engine, existing BTC/portfolio examples, cost settings, synthetic data, arithmetic checker and documentation. New user strategies may require the coding AI to add and test their rules. This is a local AI-assisted workflow; it does not install a hosted connector or make every chat client executable.
-
-No wallet, trading-account connection or paid model call is required by the examples. Keep all work scoped to research. See [settings](docs/SETTINGS.md), [calculation details](docs/CALCULATIONS.md) and [testing walkthrough](docs/TEST_IT.md).
+A downloadable folder containing the engine, synthetic price generator, editable strategy examples, instructions for an AI, readable reports and calculation checks. Everything runs locally after setup. A Python file holds the strategy; a small JSON file holds its settings. No service hosting or account connection is required.

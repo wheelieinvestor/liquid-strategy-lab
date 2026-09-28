@@ -1,5 +1,7 @@
 # Architecture and extraction
 
+The primary `liquid-lab sandbox` workflow is a small strategy runner in `liquid_strategy_lab/sandbox.py` with generated bars from `synthetic.py`. It shares the Decimal ledger but supplies its own idealized zero-cost fills, 1x sizing and past-only custom callback. It does not invoke the advanced strategy-specific risk/stop/venue model described below. Signals execute at the next bar open. `scripts/verify_calculations.py` also checks this saved-run schema independently.
+
 The public command `liquid-lab` loads local settings/data, invokes the causal simulator, and writes a self-contained HTML comparison plus JSON evidence. The `liquid-research` command exposes lower-level replay, recording, archive, and portfolio tools.
 
 The inherited engine remains in the `liquid_autonomous_trader` Python namespace to preserve its tested imports. The beginner interface, dataset validation, portable provenance, and report live in `liquid_strategy_lab`.

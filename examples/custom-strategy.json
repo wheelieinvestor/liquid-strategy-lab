@@ -1,0 +1,10 @@
+{
+  "title": "Custom breakout rules on synthetic scenarios",
+  "strategy": "custom",
+  "strategy_file": "custom_strategy.py",
+  "direction": "long_only",
+  "initial_cash": "1000",
+  "position_notional": "200",
+  "seed": 7,
+  "bars": 512
+}

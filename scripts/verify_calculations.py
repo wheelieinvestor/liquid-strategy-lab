@@ -167,6 +167,7 @@ def main():
         if not isinstance(result, dict) or result.get("schema") not in {
             "liquid-btc-historical-v1",
             "liquid-portfolio-replay-v1",
+            "liquid-synthetic-sandbox-v1",
         }:
             continue
         name = str(path.relative_to(args.directory))
@@ -209,7 +210,7 @@ def main():
         "runs": len(summaries),
         "fills": len(all_fills),
         "checks": sum(s["checks"] for s in summaries.values()),
-        "scope": "saved all-taker BTC runs and authored portfolio fixtures; "
+        "scope": "saved synthetic sandbox, all-taker BTC and authored portfolio runs; "
         "not proof of observed fees, execution or profitability",
         "results": summaries,
     }
