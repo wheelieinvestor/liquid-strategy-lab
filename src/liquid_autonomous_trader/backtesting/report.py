@@ -7,7 +7,7 @@ from collections import Counter
 from decimal import Decimal as D
 from pathlib import Path
 
-from liquid_autonomous_trader.backtesting.ledger import ZERO, serial
+from liquid_autonomous_trader.backtesting.ledger import HOUR_US, ZERO, serial
 
 
 def reportable(result):
@@ -50,6 +50,7 @@ def reportable(result):
 def trade_cohorts(journal):
     open_trades = {}
     completed = []
+    funding_settlements = set()
     for event in journal:
         row = event["data"]
         kind = event["kind"]
@@ -88,9 +89,12 @@ def trade_cohorts(journal):
                 trade["net_pnl"] = trade["price_pnl"] - trade["fees"] + trade["funding"]
                 completed.append(trade)
                 del open_trades[symbol]
-        elif kind == "funding" and row["symbol"] in open_trades:
-            trade = open_trades[row["symbol"]]
-            trade["funding"] -= trade["quantity"] * D(row["oracle_price"]) * D(row["rate"])
+        elif kind == "funding":
+            key = (row["symbol"], row["settlement_us"] // HOUR_US)
+            if key not in funding_settlements and row["symbol"] in open_trades:
+                trade = open_trades[row["symbol"]]
+                trade["funding"] -= trade["quantity"] * D(row["oracle_price"]) * D(row["rate"])
+            funding_settlements.add(key)
         elif kind == "mark" and row["symbol"] in open_trades:
             trade = open_trades[row["symbol"]]
             pnl = trade["quantity"] * (D(row["price"]) - trade["entry"])
@@ -155,6 +159,9 @@ def metrics(result: dict) -> dict:
             "fees": fees,
             "funding": funding,
             "slippage_informational_already_in_prices": D(state["slippage"]),
+            "slippage_scope": "combined spread, extra slippage and tick rounding; "
+            "reference mark for book fills, trigger/gap price for candle exits; "
+            "only fills with reference_price; already included in PnL",
             "max_marked_drawdown_usd": drawdown,
             "max_drawdown_duration_seconds": max_duration / 1_000_000,
             "closed_trades": len(closed),
@@ -181,7 +188,9 @@ def metrics(result: dict) -> dict:
             },
             "ambiguities": sum(e["kind"] == "intrabar_ambiguity" for e in events),
             "no_fill_rate": D(no_fill) / len(terminal) if terminal else None,
-            "protection_failure_exits": sum(e.get("cause") == "protection_failure" for e in events),
+            "protection_failure_exits": sum(
+                e.get("cause", "").startswith("protection_failure") for e in events
+            ),
             "trades": closed,
             "open_trade_cohorts": opened,
             "mae_mfe_scope": "observed replay marks only, not reconstructed intrabar tape",

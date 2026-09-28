@@ -369,7 +369,7 @@ class SimulatedExecution:
                 outcome_known=True,
             )
 
-    def _close(self, symbol, price, at_us, cause, quantity_limit=None):
+    def _close(self, symbol, price, at_us, cause, quantity_limit=None, *, reference_price=None):
         position = self.ledger.positions[symbol]
         spec = self.ledger.instruments[symbol]
         price = (price / spec.price_step).to_integral_value(
@@ -392,6 +392,9 @@ class SimulatedExecution:
             leverage=position.leverage,
             mode=position.mode,
             reduce_only=True,
+            reference_price=self.ledger.marks[symbol]
+            if reference_price is None
+            else reference_price,
         )
         if symbol not in self.ledger.positions:
             self.targets.pop(symbol, None)
@@ -403,7 +406,7 @@ class SimulatedExecution:
             {"kind": "exit", "symbol": symbol, "at_us": at_us, "cause": cause, "price": str(price)}
         )
 
-    def quote(self, symbol, at_us, *, bids, asks, mark=None):
+    def quote(self, symbol, at_us, *, bids, asks, mark=None, synthetic_locked=False):
         """Consume observed depth once per observation, in submission order.
 
         A limit fills only on a strictly marketable level; touching/resting queues
@@ -420,7 +423,12 @@ class SimulatedExecution:
             raise ValueError("execution_clock_regressed")
         buy = [[number(p, positive=True), number(q, nonnegative=True)] for p, q in asks]
         sell = [[number(p, positive=True), number(q, nonnegative=True)] for p, q in bids]
-        if not buy or not sell or sell[0][0] >= buy[0][0]:
+        if (
+            not buy
+            or not sell
+            or sell[0][0] > buy[0][0]
+            or (sell[0][0] == buy[0][0] and not synthetic_locked)
+        ):
             raise ValueError("invalid_book")
         if any(a[0] > b[0] for a, b in zip(buy, buy[1:])) or any(
             a[0] < b[0] for a, b in zip(sell, sell[1:])
@@ -439,9 +447,15 @@ class SimulatedExecution:
         # Native stop remains active when app/model is unavailable. Once triggered,
         # a depth-limited remainder is a pending market exit even if price rebounds.
         position = self.ledger.positions.get(symbol)
-        if position and position.stop is not None and position.stop_active_us < at_us:
+        if position and (
+            symbol in self.triggered_stops
+            or (position.stop is not None and position.stop_active_us < at_us)
+        ):
             trigger_price = self.ledger.marks[symbol]
-            if (trigger_price - position.stop) * (1 if position.quantity > 0 else -1) <= 0:
+            if (
+                position.stop is not None
+                and (trigger_price - position.stop) * (1 if position.quantity > 0 else -1) <= 0
+            ):
                 self.triggered_stops.add(symbol)
             if symbol in self.triggered_stops:
                 levels = sell if position.quantity > 0 else buy
@@ -513,7 +527,7 @@ class SimulatedExecution:
                         fee=fee,
                         leverage=order.leverage,
                         mode=order.mode,
-                        reference_price=midpoint,
+                        reference_price=self.ledger.marks[symbol],
                         order_id=order.order_id,
                     )
                 except ValueError as exc:
@@ -542,7 +556,28 @@ class SimulatedExecution:
                             original=True,
                         )
                     except ValueError:
-                        self._close(symbol, price, at_us, "protection_failure")
+                        # A gap can put the admitted stop on the wrong side of
+                        # the fill. Exit against opposite-side depth, never at
+                        # the entry price; retain any unfilled emergency exit.
+                        self.triggered_stops.add(symbol)
+                        self._finish(order, at_us, "cancelled_after_exit")
+                        opposite = sell if p.quantity > 0 else buy
+                        for exit_index, exit_level in enumerate(opposite):
+                            if symbol not in self.ledger.positions:
+                                break
+                            exit_quantity = (
+                                min(abs(self.ledger.positions[symbol].quantity), exit_level[1])
+                                / spec.quantity_step
+                            ).to_integral_value(rounding=ROUND_FLOOR) * spec.quantity_step
+                            if exit_quantity:
+                                self._close(
+                                    symbol,
+                                    exit_level[0],
+                                    at_us,
+                                    f"protection_failure_level_{exit_index}",
+                                    exit_quantity,
+                                )
+                                exit_level[1] -= exit_quantity
                         break
                 if order.target is not None:
                     self.targets[symbol] = order.target
@@ -561,15 +596,35 @@ class SimulatedExecution:
                     break
                 order.state = "partial"
 
-    def bar(self, symbol, start_us, end_us, *, open_price, high, low, close):
+    def bar(
+        self,
+        symbol,
+        start_us,
+        end_us,
+        *,
+        open_price,
+        high,
+        low,
+        close,
+        spread_bps="0",
+        extra_slippage_bps="0",
+    ):
         """OHLC-only stop execution is an explicit adverse-path approximation.
 
         Only protection effective by interval start can act within this bar.
         Stops installed midway through a bar wait for subsequent observations.
+        The same adverse spread/slippage overlay as minute-open fills applies
+        to exits. Price precision is rounded against the closing side.
         """
         o, h, lo, c = map(lambda x: number(x, positive=True), (open_price, high, low, close))
         if not lo <= min(o, c) <= max(o, c) <= h or start_us > end_us or end_us < self.last_us:
             raise ValueError("invalid_bar")
+        half = (
+            number(spread_bps, nonnegative=True) / 20000
+            + number(extra_slippage_bps, nonnegative=True) / 10000
+        )
+        if half >= 1:
+            raise ValueError("invalid_execution_cost_fraction")
         self.last_us = end_us
         p = self.ledger.positions.get(symbol)
         if p and p.stop is not None and p.stop_active_us <= start_us:
@@ -583,9 +638,21 @@ class SimulatedExecution:
                 )
             if stop_hit and (self.adverse_intrabar or not target_hit):
                 price = min(o, p.stop) if long else max(o, p.stop)
-                self._close(symbol, price, end_us, "stop_ohlc_adverse_assumption")
+                self._close(
+                    symbol,
+                    price * (1 - half if long else 1 + half),
+                    end_us,
+                    "stop_ohlc_adverse_assumption",
+                    reference_price=price,
+                )
             elif target_hit:
-                self._close(symbol, target, end_us, "target_ohlc_assumption")
+                self._close(
+                    symbol,
+                    target * (1 - half if long else 1 + half),
+                    end_us,
+                    "target_ohlc_assumption",
+                    reference_price=target,
+                )
         self.ledger.apply(f"bar-mark:{symbol}:{end_us}", end_us, "mark", symbol=symbol, price=c)
 
     def state(self):

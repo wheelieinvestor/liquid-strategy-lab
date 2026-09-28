@@ -1,0 +1,12 @@
+{
+  "title": "BTC comparison with higher assumed costs",
+  "strategy": "btc_momentum",
+  "dataset": "bundled:btc-demo",
+  "data_kind": "synthetic",
+  "data_description": "Authored synthetic BTC candles; not historical prices.",
+  "initial_cash": "1000",
+  "fee_per_side": "0.0012",
+  "spread_bps": "8",
+  "slippage_bps": "5",
+  "policies": ["preserve-stop", "breakeven-1R"]
+}

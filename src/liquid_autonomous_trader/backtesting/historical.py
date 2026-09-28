@@ -219,6 +219,7 @@ def run_btc(
                 bids=[(bid, assumptions.depth_base)],
                 asks=[(ask, assumptions.depth_base)],
                 mark=row.open,
+                synthetic_locked=half == 0,
             )
             if matched_entry is not None and row.open_us == matched_entry["fill"]["at_us"]:
                 # Exit-only matched cohorts take exactly the same simulated
@@ -264,6 +265,8 @@ def run_btc(
                 high=row.high,
                 low=row.low,
                 close=row.close,
+                spread_bps=assumptions.spread_bps,
+                extra_slippage_bps=assumptions.extra_slippage_bps,
             )
             equity.append({"at_us": row_end, "equity": str(ledger.equity())})
             if ledger.breaches():
@@ -389,7 +392,7 @@ def run_btc(
         result["fidelity"] = dataset["kind"] + "_with_synthetic_execution_assumptions"
         result["limitations"][0] = dataset["description"]
         result["limitations"][6] = (
-            "Funding is supplied by the dataset; zero synthetic funding is a scenario assumption"
+            "CSV/demo funding is assumed zero, not observed; candles do not supply funding rates"
         )
     result = serial(result)
     if manager is not None:

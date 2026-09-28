@@ -79,7 +79,8 @@ def test_matched_entry_production_target_and_candidate_wait_for_executable_obser
     )
     assert D(baseline["ledger"]["equity"]) == D("1001.9")
     assert D(legacy["ledger"]["equity"]) == D("1001.78801")
-    assert D(candidate["ledger"]["equity"]) == D("999.8")
+    # Stop at 100 executes at 99.99 after half-spread and adverse tick rounding.
+    assert D(candidate["ledger"]["equity"]) == D("999.79001")
     exit_fill = next(
         e for e in legacy["ledger_journal"] if e["kind"] == "fill" and e["data"].get("reduce_only")
     )
