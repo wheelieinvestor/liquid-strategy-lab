@@ -3,7 +3,32 @@
 from decimal import Decimal
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+
+class SandboxSettings(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, allow_inf_nan=False)
+    title: str = Field(default="Test a strategy across five fictional markets", max_length=120)
+    strategy: Literal["sma_trend", "custom"] = "sma_trend"
+    strategy_file: str | None = None
+    fast: int = Field(default=20, ge=1, le=199)
+    slow: int = Field(default=50, ge=2, le=200)
+    direction: Literal["long_short", "long_only"] = "long_short"
+    initial_cash: Decimal = Field(default=Decimal("1000"), ge=1, le=1000000)
+    position_notional: Decimal = Field(default=Decimal("200"), gt=0, le=1000000)
+    seed: int = Field(default=7, ge=0, le=2147483647)
+    bars: int = Field(default=512, ge=300, le=10000)
+
+    @model_validator(mode="after")
+    def consistent_rules(self):
+        if self.fast >= self.slow:
+            raise ValueError("fast_must_be_less_than_slow")
+        if self.position_notional > self.initial_cash:
+            raise ValueError("position_notional_cannot_exceed_initial_cash")
+        if (self.strategy == "custom") != bool(self.strategy_file):
+            raise ValueError("custom_strategy_requires_strategy_file_only")
+        return self
+
 
 POLICY_NAMES = {
     "preserve-stop": "current-v5-missing-cache-hold",

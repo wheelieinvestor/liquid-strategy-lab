@@ -1,5 +1,7 @@
 # What the cost model calculates
 
+The starter `sandbox` excludes fees, spread, slippage and funding entirely. Its equity is starting cash plus realized and unrealized price profit/loss; see [the synthetic guide](SYNTHETIC.md). The cost assumptions below apply only to the separate advanced commands.
+
 For BTC perps, each filled side pays `abs(quantity × execution price) × fee rate`. The community default is `0.00095`, or 0.095%, matching Liquid's published tier-0 crypto-perpetual taker rate checked September 28, 2026. This is the all-in rate: do not add the Liquid builder fee again. Account tiers, referrals, venue routing and time can change the applicable rate. [Liquid fee schedule](https://docs.tryliquid.xyz/trading/fees).
 
 Fees apply to notional, not collateral. A $2,000 fill at this rate costs $1.90; an equal-notional exit costs another $1.90. Leverage changes collateral and exposure; it does not multiply an already notional-based fee again. The BTC template requests $2,000 notional at 40x, subject to admission and precision checks.

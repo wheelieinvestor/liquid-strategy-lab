@@ -1,6 +1,8 @@
-# Settings and data
+# Advanced cost-aware settings and data
 
-`examples/btc.json` is the beginner template. Unknown fields are rejected rather than silently ignored.
+For the simple zero-cost starter, use [the synthetic strategy guide](SYNTHETIC.md).
+
+`examples/btc.json` is the advanced BTC momentum template. Unknown fields are rejected rather than silently ignored.
 
 | Setting | Meaning |
 |---|---|

@@ -1,13 +1,20 @@
-# Read the report honestly
+# Reading your results
 
-Net result reconciles price-based profit/loss, fees, modeled funding, and the marked value of positions still open. Slippage is already reflected in execution prices; it is not subtracted twice. The report's largest account decline is measured from an earlier equity peak, in dollars.
+The starter `sandbox` report applies the **same strategy** to five different fictional markets. Its result is **before all trading costs**: fees, spread, slippage and funding are zero.
 
-The fill table is simulated. A decision or submitted order is not automatically a fill. Details retain rejected orders, ambiguous candle paths, missing models, delayed commands, and no-fills. Candles do not establish exact historical order-book priority or liquidation execution. Maintenance breaches stop performance reporting instead of inventing a liquidation result.
+- **Simulated result before costs:** ending account equity minus starting cash, including unrealized profit/loss on positions still open.
+- **Largest account decline:** biggest dollar fall from an earlier equity peak, measured at saved candle closes. It does not capture every intrabar extreme.
+- **Completed trades:** positions fully closed. A reversal closes one trade and opens another.
+- **Positions still open:** remaining exposure marked at the final close. There is no assumed final exit.
 
-Two stop rules can lead to different later entries because they release capital at different times. The beginner comparison follows each whole strategy path. The advanced engine also supports identical-entry experiments.
+The curves show separate accounts under different scenarios. A rising-market result is not a baseline against which a falling-market result represents a strategy improvement. Compare rule changes on matching scenarios and seeds. A report with no trades may reflect the rules never triggering, rather than a failure.
 
-The included BTC data and four-agent events are authored synthetic fixtures. They teach the software and test behavior; no market edge follows from their simulated returns. The original private research study used Binance BTCUSDT proxy history for its longer BTC comparison. It completed 120 comparisons and supported no live policy change. Those private archives and original results are not bundled with this release, and the old study's counts are not the new package's verification results.
+Open `comparison.json` for settings, metrics and run hashes. Each scenario JSON includes every generated bar, decision, fill and ledger transition. The arithmetic checker independently checks recorded results; it cannot certify that user-written rules match an idea or never access outside data.
 
-Exact Jev replay requires original request state, model/policy identity, and availability/completion timestamps. Missing records preserve the stop/quantity and remain visibly missing. This distribution never calls live inference or reconstructs unknown past answers.
+Synthetic tests show behavior under authored conditions. Positive results do not establish profitability on Liquid; synthetic paths do not eliminate look-ahead bugs or selection overfitting. [The strategy guide](SYNTHETIC.md) explains the timing and scope.
 
-For a defensible research claim, retain the full settings, data source and coverage, source/dependency hashes, costs, all tested variations, and sufficient untouched evaluation periods. This software supplies evidence, not a guarantee or a deployment decision.
+## Advanced cost-aware results
+
+The older `demo`, `run` and `portfolio` reports use their configured cost model. Their “Net simulated result” includes fees, modeled funding and execution prices with modeled friction. Informational slippage is already included in fill prices and must not be deducted again. Refer to [calculation details](CALCULATIONS.md).
+
+Advanced comparisons also expose missing original AI decisions, source coverage, breaches and other execution limitations. Missing inputs do not become exact historical evidence merely because a replay completes. Preserve these labels when sharing results.

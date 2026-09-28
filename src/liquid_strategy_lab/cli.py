@@ -19,7 +19,12 @@ from liquid_strategy_lab import __version__
 from liquid_strategy_lab.datasets import MINUTE, load_csv
 from liquid_strategy_lab.portable import dependency_hash, rss_bytes, source_hash
 from liquid_strategy_lab.report import render
-from liquid_strategy_lab.settings import POLICY_NAMES, BtcSettings, PortfolioSettings
+from liquid_strategy_lab.settings import (
+    POLICY_NAMES,
+    BtcSettings,
+    PortfolioSettings,
+    SandboxSettings,
+)
 
 
 def bundled(name):
@@ -117,6 +122,32 @@ def finish(title, settings, dataset, results, output, began):
     )
 
 
+def sandbox(settings, config_directory, output):
+    from liquid_strategy_lab.sandbox import run, strategy_factory
+    from liquid_strategy_lab.synthetic import SCENARIOS, description, generate
+
+    output = new_output(output)
+    began = time.monotonic()
+    factory, strategy_hash = strategy_factory(settings, config_directory)
+    results = {}
+    for name in SCENARIOS:
+        rows = generate(name, settings.seed, settings.bars)
+        results[name] = run(rows, description(name, settings.seed, rows), settings, factory())
+        results[name]["strategy_sha256"] = strategy_hash
+        results[name]["core_hash"] = digest(
+            {k: v for k, v in results[name].items() if k != "core_hash"}
+        )
+    dataset = {
+        "kind": "synthetic",
+        "funding": "excluded",
+        "costs": "excluded",
+        "description": "Five fictional markets. Fees, spread, slippage and funding excluded.",
+        "sha256": digest({name: r["dataset"]["sha256"] for name, r in results.items()}),
+    }
+    finish(settings.title, settings.model_dump(mode="json"), dataset, results, output, began)
+    return output
+
+
 def portfolio(settings, output):
     from liquid_autonomous_trader.backtesting.fixtures import adapters, portfolio_events
     from liquid_autonomous_trader.backtesting.portfolio import PortfolioEngine
@@ -166,6 +197,12 @@ def main(argv=None):
     )
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command", required=True)
+    simple = commands.add_parser(
+        "sandbox", help="Test strategy rules on five synthetic scenarios, without costs"
+    )
+    simple.add_argument("--config", type=Path)
+    simple.add_argument("--output", type=Path, default=Path("outputs/sandbox"))
+    simple.add_argument("--open", action="store_true")
     demo = commands.add_parser("demo", help="Run the included BTC comparison")
     demo.add_argument("--output", type=Path, default=Path("outputs/demo"))
     demo.add_argument(
@@ -189,6 +226,7 @@ def main(argv=None):
     try:
         if args.command == "templates":
             print(
+                "Synthetic sandbox: SMA or custom rules in five fictional markets, zero costs.\n"
                 "BTC Momentum: candle simulation and stop comparisons (synthetic or proxy CSV).\n"
                 "Flow Show Mirror, XYZ100 GEX, Inverse Cramer: captured-event replay "
                 "and synthetic portfolio examples.\n"
@@ -205,7 +243,16 @@ def main(argv=None):
             )
             return 0 if result["selected_cases_passed"] else 1
         config = args.config if args.command != "demo" else None
-        if args.command == "portfolio":
+        if args.command == "sandbox":
+            settings = (
+                SandboxSettings.model_validate_json(config.read_text(encoding="utf-8"))
+                if config
+                else SandboxSettings()
+            )
+            output = sandbox(
+                settings, config.resolve().parent if config else Path.cwd(), args.output
+            )
+        elif args.command == "portfolio":
             config = config or bundled("portfolio.json")
             settings = PortfolioSettings.model_validate_json(config.read_text(encoding="utf-8"))
             output = portfolio(settings, args.output)

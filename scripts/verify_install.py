@@ -23,6 +23,17 @@ def verify(folder):
     return value["run_hashes"]
 
 
+def verify_sandbox(folder):
+    value = json.loads((folder / "comparison.json").read_text(encoding="utf-8"))
+    assert value["dataset"]["costs"] == "excluded"
+    assert len(value["run_hashes"]) == 5
+    assert (folder / "report.html").stat().st_size > 1000
+    for metric in value["metrics"].values():
+        assert float(metric["fees"]) == float(metric["funding"]) == 0
+        assert float(metric["slippage_informational_already_in_prices"]) == 0
+    return value["run_hashes"]
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--work-dir", type=Path, required=True)
@@ -43,6 +54,32 @@ def main():
             bundle.extractall(checkout)
         assert not (checkout / ".git").exists()
         call("uv", "sync", "--frozen", cwd=checkout)
+        call("uv", "run", "--frozen", "liquid-lab", "sandbox", cwd=checkout)
+        simple = verify_sandbox(checkout / "outputs/sandbox")
+        call(
+            "uv",
+            "run",
+            "--frozen",
+            "liquid-lab",
+            "sandbox",
+            "--config",
+            "examples/custom-strategy.json",
+            "--output",
+            "outputs/custom",
+            cwd=checkout,
+        )
+        verify_sandbox(checkout / "outputs/custom")
+        call(
+            "uv",
+            "run",
+            "--frozen",
+            "python",
+            "scripts/verify_calculations.py",
+            "outputs/sandbox",
+            "--output",
+            "outputs/sandbox-arithmetic",
+            cwd=checkout,
+        )
         call(
             "uv", "run", "--frozen", "liquid-lab", "demo", "--output", "outputs/fresh", cwd=checkout
         )
@@ -106,6 +143,17 @@ def main():
             "-I",
             "-m",
             "liquid_strategy_lab.cli",
+            "sandbox",
+            "--output",
+            "sandbox",
+            cwd=elsewhere,
+        )
+        assert verify_sandbox(elsewhere / "sandbox") == simple
+        call(
+            str(python),
+            "-I",
+            "-m",
+            "liquid_strategy_lab.cli",
             "demo",
             "--output",
             "demo",
@@ -124,13 +172,19 @@ def main():
         )
         print(
             "PASS: fresh ZIP install, all community commands, installed wheel, "
-            "identical demo economics"
+            "custom strategy, identical sandbox and demo economics"
         )
         print("Demo run hashes: " + json.dumps(first, sort_keys=True))
         receipt = args.work_dir / ("install-" + sys.platform + ".json")
         receipt.write_text(
             json.dumps(
-                {"status": "passed", "platform": sys.platform, "run_hashes": first}, indent=2
+                {
+                    "status": "passed",
+                    "platform": sys.platform,
+                    "run_hashes": first,
+                    "sandbox_hashes": simple,
+                },
+                indent=2,
             )
             + "\n",
             encoding="utf-8",

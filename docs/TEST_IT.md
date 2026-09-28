@@ -1,56 +1,25 @@
-# Test the setup yourself
+# Test the setup
 
-Start with the corrected v0.1.1 release or newer. Install uv and open a terminal in the extracted repository folder as described in the README.
-
-## 1. Run the complete beginner example
+From the extracted folder, run:
 
 ```sh
 uv sync --frozen
-uv run --frozen liquid-lab demo --output outputs/my-check --open
+uv run --frozen liquid-lab sandbox --output outputs/first-test --open
+uv run --frozen python scripts/verify_calculations.py outputs/first-test --output outputs/first-test-arithmetic
 ```
 
-Read the two account curves, net result, largest decline, fees, and open positions. Expand the fills and click a detailed report. With the unchanged included data and defaults, preserve-stop finishes at **-$96.72**, and moving the stop to entry at 1R finishes at **-$43.91**. Both still have one position open. These are synthetic examples, not predictions. Different inputs should give different results.
+The report compares the same 20/50 moving-average trend rule in five fictional markets. Fees, spread, slippage and funding are all excluded. The checker independently reconstructs fills, inventory, cash flows, account value, drawdown and completed-trade statistics. A pass validates the saved arithmetic, not an investment conclusion.
 
-The first simulated entry buys 0.01988 BTC at $100,642. Its notional is $2,000.76296, and its 0.095% fee is $1.900724812. The reference price is $100,621.86; combined spread, slippage and price rounding cost $0.4003832 on this fill. That cost is already reflected in the execution price.
-
-## 2. Check the numbers independently
+Change `fast` from 20 to 10 in `examples/strategy.json`, then use a new output folder:
 
 ```sh
-uv run --frozen python scripts/verify_calculations.py outputs/my-check --output outputs/my-check-arithmetic
+uv run --frozen liquid-lab sandbox --config examples/strategy.json --output outputs/changed-rule
 ```
 
-This checks fees on each fill, signed funding, inventory, average entry, realized profit/loss, ending equity, every saved account-value point, drawdown, and reported trade statistics. It uses signed trade cash flows without importing the engine's accounting or report calculations. The output includes `arithmetic.json` and a complete `fills.csv`.
+Compare each scenario with the same scenario in the first run. Keep seed, size and other rules fixed for this comparison. Then try other seeds and keep their results too.
 
-It supports the saved all-taker BTC simulations and the authored portfolio fixtures. It verifies arithmetic under the saved assumptions, not whether those assumptions reproduce a live account.
+To test your own rule file, use `examples/custom-strategy.json` as a starting point and read [the strategy guide](SYNTHETIC.md). Check that the actual entries and exits match your intended rules; the included example alone cannot verify a different strategy.
 
-## 3. Make costs worse
+Each run saves `report.html`, `comparison.json`, and a detailed JSON/HTML pair for each scenario. The checker saves `arithmetic.json` and `fills.csv`. An open endpoint position contributes unrealized profit/loss; it is not silently closed.
 
-```sh
-uv run --frozen liquid-lab run --config examples/btc-high-costs.json --output outputs/my-high-cost-check --open
-```
-
-This uses the same two policies and candles with 0.12% fee per side, an 8-basis-point full spread, and 5 basis points of extra slippage per fill. Compare the net result and drawdown with step 1. Larger costs can also change later trades through available capital and stops, so the difference need not equal a simple fee adjustment.
-
-Use a new output folder each time. To test one cause at a time, copy `examples/btc.json`, change only one setting, and pass that file with `--config`.
-
-## 4. Exercise the other agents and failure handling
-
-```sh
-uv run --frozen liquid-lab portfolio --output outputs/my-portfolio-check --open
-uv run --frozen liquid-lab stress --family execution --output outputs/my-execution-check
-uv run --frozen liquid-lab stress --family source --output outputs/my-source-check
-uv run --frozen liquid-lab stress --family portfolio --output outputs/my-portfolio-stress
-uv run --frozen liquid-lab stress --family jev --output outputs/my-jev-check
-```
-
-These four standalone stress families contain 400 cases. The additional 100 market cases and the original 120-run research study require historical archives that are not bundled. The short portfolio example checks four strategies sharing capital; it uses authored events and a uniform assumed fee, not venue-specific stock or commodity fees.
-
-## 5. Decide whether it is useful
-
-A useful setup must reproduce unchanged inputs, make its calculations inspectable, and expose missing data. The examples establish those properties. They do not establish a profitable strategy.
-
-For performance research, import permitted minute data using the settings guide, freeze a few candidate rules before looking at their outcomes, and retain all results. Evaluate on later periods that were not used to choose the rules, across different market conditions, at the actual route/account fees and adverse execution assumptions. Compare net return and drawdown, not win rate alone. Ensure there are enough independent trades and periods to support any conclusion.
-
-The simple CSV path assumes zero funding. Use the advanced historical/event interfaces when funding matters. Historical candles cannot establish exact fills, order-book depth, oracle prices, liquidation execution, or missing AI decisions. All supplied comparisons retain that limitation.
-
-See [calculation details](CALCULATIONS.md), [settings](SETTINGS.md), and [advanced interfaces](ADVANCED.md).
+The optional cost-aware commands remain available. See [advanced settings](SETTINGS.md) and [calculation details](CALCULATIONS.md). No account connection is part of this setup.

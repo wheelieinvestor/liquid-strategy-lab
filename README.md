@@ -1,83 +1,58 @@
 # Liquid Strategy Lab
 
-**Test Liquid trading strategies on your own computer, using simulated money.**
+**Give your AI a strategy. Test its rules in five fictional markets.**
 
-Built for Liquid users and the ATG community. Download it, run the included example, change one setting, and compare the results in your browser. No wallet, Liquid login, API key, or paid data is needed for the examples.
+A simple, local strategy playground for Liquid users and the ATG community. The starter uses synthetic prices and simulated money, with **fees, spread, slippage and funding excluded**. No wallet, account, paid data or model API key is needed.
 
-This is independent community software, not an official Liquid product. It simulates trading; it cannot place live orders.
+It helps you see when your rules trade, how they handle changing conditions, and where they lose money before costs. Synthetic gains do not establish that a strategy will make money on Liquid. This is independent community software, not an official Liquid product, and cannot place live orders.
 
-**Want your AI to handle it?** Download the [AI starter ZIP](https://github.com/wheelieinvestor/liquid-strategy-lab/releases/latest/download/liquid-strategy-lab-ai-starter.zip), open its folder in an AI coding tool, and copy the prompt from [START_HERE.md](START_HERE.md). Your AI runs the local engine and explains the results in the conversation. It needs file access and Python execution; new strategies may require it to add and test their rules.
+## Give it to your AI
 
-## Start here
+1. [Download the starter ZIP](https://github.com/wheelieinvestor/liquid-strategy-lab/releases/latest/download/liquid-strategy-lab-ai-starter.zip) and extract it.
+2. Open the folder in an AI coding tool with file access and Python execution.
+3. Paste this and describe your idea:
 
-Use **Python 3.12**, managed automatically by [uv](https://docs.astral.sh/uv/getting-started/installation/). The release workflow checks Windows, macOS, and Linux; its result is visible in [Actions](https://github.com/wheelieinvestor/liquid-strategy-lab/actions).
+> Read START_HERE.md. Use this project to test my strategy on synthetic data, with all trading costs excluded. Handle setup and execution, check that the rules match my idea, and explain the results here. My strategy is: [your rules].
 
-1. Install uv using its [official instructions](https://docs.astral.sh/uv/getting-started/installation/). On Windows, `winget install --id=astral-sh.uv -e` is an option; on a Mac with Homebrew, `brew install uv` is an option. Close and reopen your terminal afterward.
-2. Download and extract **Source code (zip)** from the [latest release](https://github.com/wheelieinvestor/liquid-strategy-lab/releases/latest). Open a terminal in that extracted folder. On Windows, right-click inside the folder and select **Open in Terminal**. On macOS, type `cd ` in Terminal, drag the extracted folder into Terminal, and press Return.
-3. Run these two commands:
+Your AI runs the engine and explains the results in your conversation. The HTML report is an optional saved view. A chat that only reads uploaded files cannot execute the engine; there is no hosted service or required localhost website.
+
+[START_HERE.md](START_HERE.md) contains the instructions for your AI.
+
+## Try it yourself
+
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), open a terminal in the extracted folder, and run:
 
 ```sh
 uv sync --frozen
-uv run --frozen liquid-lab demo --open
+uv run --frozen liquid-lab sandbox --open
 ```
 
-The first setup downloads Python and the locked dependencies. The demonstration then runs locally without network access. Your report is `outputs/demo/report.html`; double-click that file if it does not open automatically. Each run keeps its full data beside the report.
+Setup downloads Python 3.12 and locked dependencies. The included strategies then run offline. The result is `outputs/sandbox/report.html`; double-click it if it does not open automatically. Use a new `--output` folder for later runs.
 
-Already use Git? Clone `https://github.com/wheelieinvestor/liquid-strategy-lab.git`, enter the folder, and use the same commands.
+The starter applies a 20/50 moving-average trend rule to rising, falling, sideways, choppy and sudden-drop markets. Each scenario starts with $1,000 of simulated cash and targets a $200 position without leveraged sizing. It shows:
 
-## What you will see
+- Simulated gain or loss **before costs** and the largest account decline.
+- Account-value curves, completed trades and positions still open.
+- Every decision, price bar and fill, with an independent arithmetic checker.
 
-The example compares the original-stop fallback with moving the stop to entry after a favorable move of **1R**. Here, 1R is the original distance between entry and stop. Moving to entry can still lose money after fees and slippage.
+[Open the included example report](examples/sandbox/report.html) locally to preview it without installing anything. GitHub's file view shows HTML source.
 
-- Net simulated result after modeled costs.
-- The largest decline from an earlier account-value peak.
-- Trading fees, open positions, and completed trades.
-- Both account-value curves and the simulated fills.
-- The data assumptions and detailed decision records.
+## Test your own rules
 
-**The included prices are synthetic, deliberately authored for teaching. They are not historical Liquid prices and do not establish profitability.** A higher result on this example does not identify a winning strategy.
-
-An [example report](examples/report.html) is included in the download; open it locally without installing anything. GitHub's normal file view shows the HTML source.
-
-## Make your first change
-
-Open `examples/btc.json` in a text editor. Change `breakeven-1R` to `breakeven-1.5R`, save it, and run:
+Change the settings in `examples/strategy.json`, then run:
 
 ```sh
-uv run --frozen liquid-lab run --config examples/btc.json --output outputs/my-first-test --open
+uv run --frozen liquid-lab sandbox --config examples/strategy.json --output outputs/my-strategy
 ```
 
-Use a **new output folder** for each comparison. Existing results are preserved. [Settings guide](docs/SETTINGS.md) explains every control, the fixed BTC sizing template, and the CSV format for your own permitted data.
+An AI can implement a different rule in a small Python file using `decide(bars, position)`. The included [custom example](examples/custom_strategy.py) demonstrates a breakout entry and moving-average exit. The engine supplies only completed bars; signals fill at the next candle's opening price. It supports long, short, flat and hold. It does not model intrabar stops or exchange execution in this mode.
 
-## Explore the other Liquid agents
+[Strategy guide](docs/SYNTHETIC.md) · [Try it and verify the numbers](docs/TEST_IT.md) · [Host walkthrough](docs/WALKTHROUGH.md)
 
-```sh
-uv run --frozen liquid-lab templates
-uv run --frozen liquid-lab portfolio --config examples/portfolio.json --output outputs/portfolio --open
-uv run --frozen liquid-lab stress --family execution --output outputs/stress
-```
+## Optional advanced tools
 
-| Strategy | Included workflow | Evidence limit |
-|---|---|---|
-| BTC Momentum | Synthetic/proxy candle tests and stop comparisons | Assumed execution; no reconstructed historical AI decisions |
-| Flow Show Mirror | Synthetic shared-account example; captured-event replay | No bundled historical Flow source archive |
-| XYZ100 GEX | Synthetic shared-account example; captured-event replay | No bundled historical GEX source archive |
-| Inverse Cramer | Synthetic shared-account example; captured-event replay | No bundled historical classifications/news archive |
+The existing cost-aware BTC, shared-account and replay tools remain available through `liquid-lab demo`, `run`, `portfolio`, `stress` and `liquid-research`. Their configured fees and execution assumptions still apply. Use them when those details are part of your research question; the starter does not require them.
 
-The portfolio example demonstrates four agents sharing capital. It is a short behavior example, not a historical performance study. Stress families also include `source`, `portfolio`, and `jev`.
+[Advanced settings and CSV data](docs/SETTINGS.md) · [Calculation details](docs/CALCULATIONS.md) · [Replay tools](docs/ADVANCED.md) · [Reading results](docs/RESULTS.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
 
-## Walkthrough and reference
-
-- [Test the setup yourself](docs/TEST_IT.md): first run, independent arithmetic checks, and higher costs.
-- [Fees, slippage, funding and calculation details](docs/CALCULATIONS.md).
-- [Host's walkthrough](docs/WALKTHROUGH.md): a repeatable community demonstration.
-- [Settings and your own CSV data](docs/SETTINGS.md).
-- [Reading results and limitations](docs/RESULTS.md).
-- [Troubleshooting](docs/TROUBLESHOOTING.md).
-- [Advanced replay, recording, and experiments](docs/ADVANCED.md).
-- [Architecture and upstream adaptations](docs/ARCHITECTURE.md).
-- [Contributing and checks](CONTRIBUTING.md).
-
-Reports and inputs stay on your computer. Review them before voluntarily sharing: a report made from your own imported data may contain private information. There is no automatic Discord posting, telemetry, or account connection.
-
-Code and authored demo data are available under the [MIT license](LICENSE). Third-party packages retain their own licenses. See [data provenance](docs/DATA.md).
+Runs stay on your computer. No automatic posting, telemetry or account connection. Review imported data before sharing it. Code and authored synthetic data use the [MIT license](LICENSE); third-party packages retain their licenses. See [data provenance](docs/DATA.md), [architecture](docs/ARCHITECTURE.md) and [contributing](CONTRIBUTING.md). Release checks run on Windows, macOS and Linux in [Actions](https://github.com/wheelieinvestor/liquid-strategy-lab/actions).
