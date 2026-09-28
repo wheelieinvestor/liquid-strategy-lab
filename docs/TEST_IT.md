@@ -1,6 +1,6 @@
 # Test the setup
 
-From the extracted folder, run:
+From `engine/` inside the extracted starter folder (or the source checkout root), run:
 
 ```sh
 uv sync --frozen

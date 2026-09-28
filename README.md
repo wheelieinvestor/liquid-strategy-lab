@@ -9,18 +9,24 @@ It helps you see when your rules trade, how they handle changing conditions, and
 ## Give it to your AI
 
 1. [Download the starter ZIP](https://github.com/wheelieinvestor/liquid-strategy-lab/releases/latest/download/liquid-strategy-lab-ai-starter.zip) and extract it.
-2. Open the folder in an AI coding tool with file access and Python execution.
-3. Paste this and describe your idea:
+2. Open **[00_START_HERE.txt](00_START_HERE.txt)** and copy everything in it.
+3. Paste it into your AI. It will ask about your strategy and help you get started.
 
-> Read START_HERE.md. Use this project to test my strategy on synthetic data, with all trading costs excluded. Handle setup and execution, check that the rules match my idea, and explain the results here. My strategy is: [your rules].
+```text
+Liquid Backtesting Starter/
+  00_START_HERE.txt   <- The prompt to paste into your AI
+  engine/            <- Everything the AI uses for the test
+```
 
-Your AI runs the engine and explains the results in your conversation. The HTML report is an optional saved view. A chat that only reads uploaded files cannot execute the engine; there is no hosted service or required localhost website.
+The first file is only a prompt. It guides the AI to the engine, tells it to ask a few useful questions, and leads into setup, testing and an explanation of the results. It includes a download link if the AI receives only the prompt.
 
-[START_HERE.md](START_HERE.md) contains the instructions for your AI.
+Your AI needs file access, Python execution and the ability to install the dependencies. If a capability is missing, the prompt helps you identify the next step. The HTML report is an optional saved view; no hosted service or localhost website is required.
+
+[Community announcement to copy](docs/SHARE_WITH_COMMUNITY.md) · [AI workflow guide](START_HERE.md)
 
 ## Try it yourself
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/), open a terminal in the extracted folder, and run:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), open a terminal in the extracted `engine/` folder (the repository root for Git users), and run:
 
 ```sh
 uv sync --frozen
