@@ -1,10 +1,10 @@
-# A community walkthrough for Liquid Strategy Lab v0.1.0
+# A community walkthrough for Liquid Strategy Lab v0.1.1
 
 Audience: Liquid users and ATG Discord members. Suggested length: 15–20 minutes. This is the host's script; it does not send invitations or community messages.
 
 ## Before the session
 
-Share the v0.1.0 release link and README. Ask participants to install uv and download/extract the release before the call. Keep an unmodified copy of `examples/btc.json` and the included `examples/report.html` available. A participant without a working installation can still follow the included report.
+Share the v0.1.1 release link and README. Ask participants to install uv and download/extract the release before the call. Keep an unmodified copy of `examples/btc.json` and the included `examples/report.html` available. A participant without a working installation can still follow the included report. The [hands-on testing guide](TEST_IT.md) adds independent arithmetic checks and higher-cost comparisons.
 
 ## 1. Explain the purpose
 

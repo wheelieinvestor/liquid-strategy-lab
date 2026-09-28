@@ -66,6 +66,8 @@ The portfolio example demonstrates four agents sharing capital. It is a short be
 
 ## Walkthrough and reference
 
+- [Test the setup yourself](docs/TEST_IT.md): first run, independent arithmetic checks, and higher costs.
+- [Fees, slippage, funding and calculation details](docs/CALCULATIONS.md).
 - [Host's walkthrough](docs/WALKTHROUGH.md): a repeatable community demonstration.
 - [Settings and your own CSV data](docs/SETTINGS.md).
 - [Reading results and limitations](docs/RESULTS.md).
