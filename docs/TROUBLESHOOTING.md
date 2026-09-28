@@ -3,7 +3,7 @@
 | Message or symptom | What to do |
 |---|---|
 | `uv` is not recognized / command not found | Install uv from its official instructions, then reopen the terminal. |
-| `No pyproject.toml found` | Open the terminal in the extracted repository folder, not its parent. |
+| `No pyproject.toml found` | Open the terminal in `engine/` inside the starter folder, or the source checkout root. Look for `pyproject.toml`. |
 | First install downloads files | Expected: uv installs Python 3.12 and dependencies once. The bundled simulation itself is offline. |
 | `output_folder_not_empty` | Choose a new folder, such as `--output outputs/demo-2`. Previous results are deliberately preserved. |
 | Browser did not open | Double-click the printed `report.html` file. |

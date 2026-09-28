@@ -41,17 +41,23 @@ def main():
     args.work_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="fresh-install-", dir=args.work_dir.resolve()) as temp:
         base = Path(temp)
-        checkout = base / "zip checkout with spaces"
-        checkout.mkdir()
-        # Match a downloaded source archive: tracked files, no .git or local state.
-        tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
-        assert "uv.lock" in tracked
-        archive = base / "source.zip"
-        with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as bundle:
-            for name in filter(None, tracked):
-                bundle.write(ROOT / name, name)
+        archive = base / "starter.zip"
+        call(
+            sys.executable,
+            str(ROOT / "scripts/build_starter.py"),
+            "--output",
+            str(archive),
+            cwd=ROOT,
+        )
         with zipfile.ZipFile(archive) as bundle:
-            bundle.extractall(checkout)
+            assert bundle.namelist()[0] == "Liquid Backtesting Starter/00_START_HERE.txt"
+            bundle.extractall(base)
+        starter = base / "Liquid Backtesting Starter"
+        assert {p.name for p in starter.iterdir()} == {"00_START_HERE.txt", "engine"}
+        checkout = starter / "engine"
+        assert (starter / "00_START_HERE.txt").read_bytes() == (
+            checkout / "00_START_HERE.txt"
+        ).read_bytes()
         assert not (checkout / ".git").exists()
         call("uv", "sync", "--frozen", cwd=checkout)
         call("uv", "run", "--frozen", "liquid-lab", "sandbox", cwd=checkout)

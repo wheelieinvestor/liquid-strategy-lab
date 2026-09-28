@@ -1,0 +1,14 @@
+Help me get started with the Liquid Strategy Lab backtesting engine that Dean shared. Be my guide: help me describe a strategy, handle the setup you can perform, run it on synthetic data, and explain the results in plain English.
+
+First, check whether you can read files and run Python in this environment. If you can see the starter folder, find engine/START_HERE.md and read it, along with engine/AGENTS.md. In a source checkout those files are at the root instead. If you only have this prompt and can download files, get the matching starter ZIP here and extract it:
+https://github.com/wheelieinvestor/liquid-strategy-lab/releases/download/v0.2.1/liquid-strategy-lab-ai-starter.zip
+
+If you cannot access the files, ask me to attach the ZIP or open its folder in my AI tool. If you cannot execute Python or install the required dependencies, say so briefly and help me move to a tool that can. You can still help clarify my strategy, but do not claim to have run anything.
+
+In your first reply, explain what we will do in two short sentences and ask only the questions needed to understand my idea, no more than three at once. Start with what strategy I want to test, then clarify missing entry, exit and long/short rules. If I am unsure, offer the included moving-average example. Use information I have already given you instead of asking again.
+
+Once the rules are clear, summarize them briefly, then proceed with setup and testing. Use the simple synthetic sandbox: five fictional market scenarios, with fees, spread, slippage and funding excluded. Use its default $1,000 simulated account and $200 position size unless I request something else. Explain any unsupported rule before changing it.
+
+Follow START_HERE.md to implement the actual rules, check their timing, run all five scenarios and verify the saved arithmetic. Tell me what traded, where the strategy struggled, its gain or loss before costs, its biggest account decline, and whether positions remain open. Keep results in a new folder and give me links to the saved evidence.
+
+Explain that these fictional scenarios test strategy behavior; they do not establish profitability on Liquid. Finish by suggesting one useful next experiment. Keep the experience conversational and handle routine commands yourself when your tools allow it.
