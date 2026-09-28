@@ -6,6 +6,8 @@ Built for Liquid users and the ATG community. Download it, run the included exam
 
 This is independent community software, not an official Liquid product. It simulates trading; it cannot place live orders.
 
+**Want your AI to handle it?** Download the [AI starter ZIP](https://github.com/wheelieinvestor/liquid-strategy-lab/releases/latest/download/liquid-strategy-lab-ai-starter.zip), open its folder in an AI coding tool, and copy the prompt from [START_HERE.md](START_HERE.md). Your AI runs the local engine and explains the results in the conversation. It needs file access and Python execution; new strategies may require it to add and test their rules.
+
 ## Start here
 
 Use **Python 3.12**, managed automatically by [uv](https://docs.astral.sh/uv/getting-started/installation/). The release workflow checks Windows, macOS, and Linux; its result is visible in [Actions](https://github.com/wheelieinvestor/liquid-strategy-lab/actions).
